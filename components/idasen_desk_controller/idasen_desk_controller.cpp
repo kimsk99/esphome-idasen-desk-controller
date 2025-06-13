@@ -140,6 +140,8 @@ void IdasenDeskControllerComponent::write_value_(uint16_t handle, unsigned short
 
   esp_err_t status = ::esp_ble_gattc_write_char(this->parent()->get_gattc_if(), this->parent()->get_conn_id(), handle, 2, data,
                                                 ESP_GATT_WRITE_TYPE_NO_RSP, ESP_GATT_AUTH_REQ_NONE);
+  ESP_LOGW(TAG, "ksk99 log %s char %s", this->parent()->get_gattc_if(),
+    this->parent()->get_conn_id(), handle, 2, data;
 
   if (status != ESP_OK) {
     this->status_set_warning();
