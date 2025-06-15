@@ -140,12 +140,13 @@ void IdasenDeskControllerComponent::write_value_(uint16_t handle, unsigned short
 
   esp_err_t status = ::esp_ble_gattc_write_char(this->parent()->get_gattc_if(), this->parent()->get_conn_id(), handle, 2, data,
                                                 ESP_GATT_WRITE_TYPE_NO_RSP, ESP_GATT_AUTH_REQ_NONE);
-  return 1
+
   if (status != ESP_OK) {
     this->status_set_warning();
     ESP_LOGW(TAG, "[%s] Error sending write request for cover, status=%d", this->get_name().c_str(), status);
-    return 0
+
   }
+  return true
 }
 
 void IdasenDeskControllerComponent::read_value_(uint16_t handle) {
@@ -217,7 +218,7 @@ void IdasenDeskControllerComponent::move_desk_() {
 
   ESP_LOGD(TAG, "Update Desk - Move from %.0f to %.0f", this->position * 100, this->position_target_ * 100);
   this->move_torwards_();
-  this->stop_move_();
+
 }
 
 void IdasenDeskControllerComponent::control(const cover::CoverCall &call) {
