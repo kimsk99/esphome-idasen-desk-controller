@@ -140,10 +140,11 @@ void IdasenDeskControllerComponent::write_value_(uint16_t handle, unsigned short
 
   esp_err_t status = ::esp_ble_gattc_write_char(this->parent()->get_gattc_if(), this->parent()->get_conn_id(), handle, 2, data,
                                                 ESP_GATT_WRITE_TYPE_NO_RSP, ESP_GATT_AUTH_REQ_NONE);
-
+  return 1
   if (status != ESP_OK) {
     this->status_set_warning();
     ESP_LOGW(TAG, "[%s] Error sending write request for cover, status=%d", this->get_name().c_str(), status);
+    return 0
   }
 }
 
@@ -274,9 +275,15 @@ void IdasenDeskControllerComponent::move_torwards_() {
 }
 
 void IdasenDeskControllerComponent::stop_move_() {
-  this->write_value_(this->control_handle_, 0xFF);
-  if (false == this->use_only_up_down_command_) {
-    this->write_value_(this->input_handle_, 0x8001);
+  bool success = this->write_value_(this->control_handle_, 0xFF);
+  if (!success) {
+    ESP_LOGD(TAG, "Failed to stop desk movement via control_handle 0xFF");
+  }
+  if (!this->use_only_up_down_command_) {
+    bool success = this->write_value_(this->control_handle_, 0x8001);
+    if (!success) {
+      ESP_LOGD(TAG, "Failed to stop desk movement via control_handle 0x8001");
+    }
   }
 
   this->current_operation = cover::COVER_OPERATION_IDLE;
